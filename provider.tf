@@ -12,12 +12,15 @@ terraform {
     }
   }
 
-  # Optional remote state backend — uncomment once you have a state bucket.
-  # backend "s3" {
-  #   bucket = "your-terraform-state-bucket"
-  #   key    = "bedrock-chatbot/terraform.tfstate"
-  #   region = "us-east-1"
-  # }
+  # Remote state backend — required so Terraform remembers what it already
+  # created between GitHub Actions runs. Replace the bucket name with your
+  # own (created manually, one-time, in the AWS Console).
+  backend "s3" {
+    bucket         = "abhishek-kumar-tf-state-2026"
+    key            = "bedrock-chatbot/terraform.tfstate"
+    region         = "eu-north-1"
+    dynamodb_table = "terraform-locks"
+  }
 }
 
 provider "aws" {
