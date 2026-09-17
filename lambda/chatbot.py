@@ -22,24 +22,20 @@ def handler(event, context):
         item = table.get_item(Key={'session_id': session_id}).get('Item')
         history = item['history'] if item else []
 
-        history.append({"role": "user", "content": user_message})
+        history.append({"role": "user", "content": [{"text": user_message}]})
 
-        # Call Bedrock using Anthropic's Messages API format
-        payload = {
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 512,
-            "messages": history
-        }
-
-        result = bedrock.invoke_model(
+        # Call Bedrock's Converse API - works the same way across all
+        # Bedrock models (Nova, Anthropic, Meta, etc), so switching
+        # MODEL_ID later doesn't require changing this code.
+        result = bedrock.converse(
             modelId=MODEL_ID,
-            body=json.dumps(payload)
+            messages=history,
+            inferenceConfig={"maxTokens": 512}
         )
 
-        result_body = json.loads(result['body'].read())
-        assistant_reply = result_body['content'][0]['text']
+        assistant_reply = result['output']['message']['content'][0]['text']
 
-        history.append({"role": "assistant", "content": assistant_reply})
+        history.append({"role": "assistant", "content": [{"text": assistant_reply}]})
 
         # Save updated history, keeping only the last 20 messages
         table.put_item(Item={
