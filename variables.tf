@@ -11,7 +11,7 @@ variable "project_name" {
 }
 
 variable "bedrock_model_id" {
-  description = "Bedrock model ID to invoke. Must have model access enabled in the Bedrock console for your account/region. Nova Micro is Amazon's cheapest text model ($0.035 per 1M input tokens, $0.14 per 1M output tokens)."
+  description = "Bedrock model/inference-profile ID to invoke. Nova Micro can only be invoked via its EU cross-region inference profile from eu-north-1, not its bare model ID."
   type        = string
-  default     = "amazon.nova-micro-v1:0"
+  default     = "eu.amazon.nova-micro-v1:0"
 }
