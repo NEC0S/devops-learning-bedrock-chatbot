@@ -40,7 +40,7 @@
 
   <script>
     const API_ENDPOINT = "${chat_endpoint}";
-    const sessionId = crypto.randomUUID();
+    const sessionId = "session-" + Math.random().toString(36).slice(2) + Date.now();
 
     const chatEl = document.getElementById("chat");
     const inputEl = document.getElementById("messageInput");
