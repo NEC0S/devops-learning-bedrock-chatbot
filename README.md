@@ -5,6 +5,7 @@ A chatbot with memory, built on:
 - **Lambda** (Python) — runs the chat logic
 - **DynamoDB** — stores conversation history per `session_id` (this is the "memory")
 - **API Gateway (HTTP API)** — exposes a `POST /chat` endpoint
+- **S3 static website** — hosts a simple browser chat UI that talks to the API
 
 Terraform provisions everything. GitHub Actions runs `plan` on pull requests
 and `apply` automatically when you merge to `main`.
@@ -27,20 +28,23 @@ Bedrock has no ongoing free token allowance.
 ## Setup
 
 1. **Push this repo to GitHub** (folder structure must stay intact —
-   `.github/workflows/terraform.yml` and `lambda/chatbot.py` must keep their paths).
+   `.github/workflows/terraform.yml`, `lambda/chatbot.py`, and `site/index.html.tpl`
+   must keep their paths).
 
 2. **IAM user**: create/reuse an IAM user with permissions for Lambda, DynamoDB,
-   IAM (to create the role), API Gateway, and Bedrock. For learning purposes,
+   IAM (to create the role), API Gateway, S3, and Bedrock. For learning purposes,
    attaching `AdministratorAccess` is simplest — scope it down later.
 
 3. **GitHub repo secrets** (Settings → Secrets and variables → Actions):
    - `AWS_ACCESS_KEY_ID`
    - `AWS_SECRET_ACCESS_KEY`
+   - `FRONTEND_BUCKET_NAME` — must be a globally unique S3 bucket name, e.g. `yourname-chatbot-frontend-2026`
 
 4. **Push to `main`** — GitHub Actions will provision everything.
 
-5. Check the **Terraform Apply** step's log for the `chat_endpoint` output,
-   e.g. `https://abc123.execute-api.us-east-1.amazonaws.com/chat`.
+5. Check the **Terraform Apply** step's log for two outputs:
+   - `chat_endpoint` — the API URL
+   - `frontend_url` — open this one in a browser to use the chat UI
 
 ## Testing the chatbot
 

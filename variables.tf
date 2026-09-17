@@ -15,3 +15,8 @@ variable "bedrock_model_id" {
   type        = string
   default     = "eu.amazon.nova-micro-v1:0"
 }
+
+variable "frontend_bucket_name" {
+  description = "Globally unique S3 bucket name for hosting the chat frontend"
+  type        = string
+}
