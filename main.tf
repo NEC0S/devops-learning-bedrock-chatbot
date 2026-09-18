@@ -107,10 +107,10 @@ resource "aws_lambda_function" "chatbot" {
 
   environment {
     variables = {
-      TABLE_NAME    = aws_dynamodb_table.chat_history.name
-      KB_TABLE_NAME = aws_dynamodb_table.knowledge_base.name
-      ORDERS_TABLE  = aws_dynamodb_table.orders.name
-      MODEL_ID      = var.bedrock_model_id
+      TABLE_NAME     = aws_dynamodb_table.chat_history.name
+      KB_TABLE_NAME  = aws_dynamodb_table.knowledge_base.name
+      ORDERS_TABLE   = aws_dynamodb_table.orders.name
+      MODEL_ID       = var.bedrock_model_id
       EMBED_MODEL_ID = "amazon.titan-embed-text-v2:0"
     }
   }
