@@ -1,6 +1,7 @@
 import boto3
 import json
 import os
+import re
 import time
 import urllib.request
 import urllib.error
@@ -25,8 +26,13 @@ SYSTEM_PROMPT = [{
         "You are a helpful customer support assistant for an online store called CloudCart. "
         "You can check order status, search CloudCart's internal help documents, and check "
         "the weather (useful for shipping-delay questions). Use the available tools whenever "
-        "they would help answer the user's question, rather than guessing. Keep answers concise "
-        "and friendly."
+        "they would help answer the user's question, rather than guessing. "
+        "When a user names a city for the weather tool, use your own knowledge of that city's "
+        "approximate latitude and longitude directly - do not ask the user for coordinates. "
+        "Keep answers concise and friendly. "
+        "Never show your internal reasoning, planning, or thinking process. Do not use tags "
+        "like <thinking> or phrases like 'Let me think' - respond with only the final answer "
+        "you want the user to see."
     )
 }]
 
@@ -136,6 +142,7 @@ def handler(event, context):
         assistant_reply = "".join(
             block["text"] for block in output_message["content"] if "text" in block
         )
+        assistant_reply = strip_leaked_reasoning(assistant_reply)
 
         history_table.put_item(Item={
             'session_id': session_id,
@@ -248,6 +255,15 @@ def log_metrics(latency_ms, input_tokens, output_tokens):
     except Exception:
         # Never let metrics logging break the actual response
         pass
+
+
+def strip_leaked_reasoning(text):
+    # Defensive net: even with system prompt instructions, models sometimes
+    # leak their reasoning. Strip common patterns rather than trust the
+    # model to always follow formatting instructions.
+    text = re.sub(r"<thinking>.*?</thinking>", "", text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE)
+    return text.strip()
 
 
 def response(status_code, body):
