@@ -44,3 +44,25 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
+
+      - name: Set up Python
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install script dependencies
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: pip install boto3
+
+      - name: Seed knowledge base
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: python scripts/ingest_knowledge_base.py
+        env:
+          TABLE_NAME: simple-bedrock-chatbot-knowledge-base
+
+      - name: Seed sample orders
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: python scripts/seed_orders.py
+        env:
+          TABLE_NAME: simple-bedrock-chatbot-orders

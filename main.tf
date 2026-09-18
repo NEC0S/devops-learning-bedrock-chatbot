@@ -10,6 +10,30 @@ resource "aws_dynamodb_table" "chat_history" {
   }
 }
 
+# --- DynamoDB table for the RAG knowledge base (chunks + embeddings) ---
+resource "aws_dynamodb_table" "knowledge_base" {
+  name         = "${var.project_name}-knowledge-base"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "chunk_id"
+
+  attribute {
+    name = "chunk_id"
+    type = "S"
+  }
+}
+
+# --- DynamoDB table simulating an orders backend (for the agent's tool use) ---
+resource "aws_dynamodb_table" "orders" {
+  name         = "${var.project_name}-orders"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "order_id"
+
+  attribute {
+    name = "order_id"
+    type = "S"
+  }
+}
+
 # --- IAM role the Lambda function assumes ---
 resource "aws_iam_role" "lambda_role" {
   name = "${var.project_name}-lambda-role"
@@ -43,7 +67,22 @@ resource "aws_iam_role_policy" "lambda_policy" {
       },
       {
         Effect   = "Allow"
+        Action   = ["dynamodb:Scan"]
+        Resource = aws_dynamodb_table.knowledge_base.arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["dynamodb:GetItem"]
+        Resource = aws_dynamodb_table.orders.arn
+      },
+      {
+        Effect   = "Allow"
         Action   = ["bedrock:InvokeModel"]
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["cloudwatch:PutMetricData"]
         Resource = "*"
       }
     ]
@@ -68,8 +107,11 @@ resource "aws_lambda_function" "chatbot" {
 
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.chat_history.name
-      MODEL_ID   = var.bedrock_model_id
+      TABLE_NAME    = aws_dynamodb_table.chat_history.name
+      KB_TABLE_NAME = aws_dynamodb_table.knowledge_base.name
+      ORDERS_TABLE  = aws_dynamodb_table.orders.name
+      MODEL_ID      = var.bedrock_model_id
+      EMBED_MODEL_ID = "amazon.titan-embed-text-v2:0"
     }
   }
 }

@@ -1,0 +1,9 @@
+CloudCart Shipping Policy: Standard shipping takes 3-5 business days within the country. Express shipping takes 1-2 business days and costs an additional $9.99. Orders are processed within 24 hours on business days. Severe weather in the destination region may delay delivery by 1-3 additional days.
+
+CloudCart Returns Policy: Items can be returned within 30 days of delivery for a full refund, as long as they are unused and in original packaging. To start a return, go to "My Orders" and select "Return Item." Refunds are processed within 5-7 business days after we receive the returned item.
+
+CloudCart Warranty Policy: All electronics sold on CloudCart come with a 1-year manufacturer warranty covering defects in materials and workmanship. The warranty does not cover accidental damage, water damage, or normal wear and tear. To file a warranty claim, contact support with your order ID and a description of the issue.
+
+CloudCart Contact Information: Customer support is available Monday-Friday, 9am-6pm. You can reach us through the in-app chat, by email at support@cloudcart.example, or by phone. Average response time for email inquiries is under 24 hours.
+
+CloudCart Payment Methods: We accept all major credit cards, PayPal, and Apple Pay. Payment is charged at the time of order confirmation, not at shipment. If an order is cancelled before shipping, a full refund is issued within 3-5 business days.
